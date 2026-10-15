@@ -110,7 +110,6 @@ if 'prev_category' not in st.session_state:
 
 if st.session_state['prev_category'] != category:
     st.session_state['prev_category'] = category
-    # 기존 입력 세션들 클리어
     keys_to_clear = [k for k in st.session_state.keys() if 'body_paragraphs_' in k or 'attach_list_' in k or 'related_list_' in k]
     for k in keys_to_clear:
         del st.session_state[k]
@@ -326,4 +325,13 @@ if st.session_state.get('preview_ready', False):
     
     st.markdown("")
     if st.button("🌐 전자결재 상신 및 표준 문서함 자동 등록", type="primary", use_container_width=True, key="approve_btn"):
-        st.
+        st.session_state['is_approved'] = True
+
+if st.session_state.get('is_approved', False):
+    approved_title = st.session_state.get('final_doc_title', '')
+    st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 정상적으로 적재되었습니다!")
+    st.markdown(f"**등록된 메타데이터 식별자:** `{approved_title}`")
+
+# 7. 하단 푸터
+st.markdown("---")
+st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit & AI Agent", unsafe_allow_html=True)
