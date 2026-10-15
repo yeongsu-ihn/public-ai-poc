@@ -104,7 +104,7 @@ with st.sidebar:
     st.markdown("### 🧠 AI 워크플로우 (HITL)")
     st.caption("1. LLM 기반 표준 제목·본문 자동 생성\n2. 공공 표준 메타데이터 검증\n3. 관련문서 및 붙임 규격 자동 정렬")
 
-# 4. 카테고리별 표준 제목 및 순수 본문 자동 생성 매핑 (본문 내 관련 근거 분리)
+# 4. 카테고리별 표준 제목 및 순수 본문 자동 생성 매핑
 if category == "업무분장":
     default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
     default_body = f"1. 2026년도 상반기 부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축\n\n2. 각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
@@ -159,32 +159,40 @@ edited_body = st.text_area(
 
 st.markdown("---")
 
-# [3파트] 관련 문서 관리 (가, 나, 다...) 및 붙임 문서 관리
+# [3파트] 관련 문서 관리 및 붙임 문서 관리 (관련 문서 포함 여부 체크박스 적용)
 st.markdown("#### 🔗 3. 관련 문서 및 붙임 문서 설정")
 
 col_sec1, col_sec2 = st.columns(2)
 
-# --- 관련 문서 세션 상태 관리 ---
+# --- 관련 문서 세션 상태 관리 (체크박스로 제어) ---
 with col_sec1:
-    st.markdown("##### 📌 관련 문서 (가, 나, 다...)")
-    if f'related_list_{category}' not in st.session_state:
-        st.session_state[f'related_list_{category}'] = []
-    
-    if st.button("➕ 관련 문서 추가", key="add_rel_btn"):
-        st.session_state[f'related_list_{category}'].append("")
-        st.rerun()
+    col_chk, col_lbl = st.columns([1, 4])
+    with col_chk:
+        use_related = st.checkbox("포함", value=False, key=f"use_rel_{category}")
+    with col_lbl:
+        st.markdown("##### 📌 관련 문서 (가, 나, 다...)")
         
     updated_related = []
-    hangul_chars = ["가", "나", "다", "라", "마", "바", "사"]
-    for idx, item in enumerate(st.session_state[f'related_list_{category}']):
-        if idx < len(hangul_chars):
-            char_label = hangul_chars[idx]
-        else:
-            char_label = f"({idx+1})"
+    if use_related:
+        if f'related_list_{category}' not in st.session_state:
+            st.session_state[f'related_list_{category}'] = ["기획예산담당관-1234 (2026. 5. 10.)호 관련"]
+        
+        if st.button("➕ 관련 문서 추가", key="add_rel_btn"):
+            st.session_state[f'related_list_{category}'].append("")
+            st.rerun()
             
-        val = st.text_input(f"관련 문서 [{char_label}] (비워두면 생략)", value=item, key=f"rel_{category}_{idx}")
-        if val.strip():
-            updated_related.append((char_label, val))
+        hangul_chars = ["가", "나", "다", "라", "마", "바", "사"]
+        for idx, item in enumerate(st.session_state[f'related_list_{category}']):
+            if idx < len(hangul_chars):
+                char_label = hangul_chars[idx]
+            else:
+                char_label = f"({idx+1})"
+                
+            val = st.text_input(f"관련 문서 [{char_label}]", value=item, key=f"rel_{category}_{idx}")
+            if val.strip():
+                updated_related.append((char_label, val))
+    else:
+        st.caption("체크 해제 시 관련 문서 항목이 생략됩니다.")
 
 # --- 붙임 문서 세션 상태 관리 ---
 with col_sec2:
@@ -211,8 +219,8 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
     
     full_doc = ""
     
-    # 1) 관련 문서가 있는 경우에만 '관련:' 블록 생성
-    if updated_related:
+    # 1) 관련 문서 체크박스가 켜져 있고 내용이 있을 때만 '관련:' 블록 생성
+    if use_related and updated_related:
         full_doc += "관련:\n"
         for char_lbl, text_val in updated_related:
             full_doc += f"  {char_lbl}. {text_val}\n"
@@ -262,4 +270,4 @@ if st.session_state.get('is_approved', False):
 
 # 7. 하단 푸터
 st.markdown("---")
-st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit & AI Agent", unsafe_allow_html=True)
+st.markdown(
