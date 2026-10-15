@@ -138,28 +138,4 @@ with col_t2:
     use_dept = st.checkbox("부서명 포함", value=True)
 
 # 부서명 유무에 따른 동적 제목 조합
-clean_department = department.strip()
-if use_dept and clean_department:
-    final_title = f"[{category}] {edited_content} ({clean_department})"
-else:
-    final_title = f"[{category}] {edited_content}"
-
-st.code(final_title, language="text")
-
-st.markdown("---")
-
-# [2파트] 본문 내용 작성 영역
-st.markdown("#### 💡 2. 표준 본문 내용 작성 (AI 생성 초안)")
-edited_body = st.text_area(
-    "공공 표준 편제 격식에 맞춘 본문 내용을 수정할 수 있습니다.",
-    value=default_body,
-    height=220,
-    key=f"body_{category}"
-)
-
-st.markdown("---")
-
-# [3파트] 관련 문서 관리 (가, 나, 다...) 및 붙임 문서 관리
-st.markdown("#### 🔗 3. 관련 문서 및 붙임 문서 설정")
-
-col_sec1, col_
+clean_department = department
