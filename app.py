@@ -62,7 +62,7 @@ elif category == "휴직복직":
     default_body = "1. 관련 근거: 국가공무원 복무규정 및 공무원 임용령\n2. 소속 직원의 육아휴직 신청에 따른 업무 공백을 방지하고 원활한 행정 서비스 유지를 위해 후임자 업무 대행자를 아래와 같이 지정합니다.\n\n  가. 휴직자 성명/직급: 주무관 김○○ (행정사무관)\n  나. 휴직 기간: 2026. 8. 1. ~ 2027. 1. 31. (6개월간)\n  다. 업무 대행자: 주무관 이○○ (지정 완료)\n\n3. 대행자는 휴직 기간 동안 해당 사무를 성실히 수행하여 업무 누수가 발생하지 않도록 조치바랍니다."
 elif category == "예산":
     default_title_content = "2026년도 제1회 추가경정예산 편성 요구서 제출"
-    default_body = "1. 관련 근거: 국가재정법 및 2026년도 예산편성 지침\n2. 주요 현안 사업 추진 및 시급한 재정 소요에 대응하기 위하여 2026년도 제1회 추가경정예산 편성 요구서를 다음과 같이 제출합니다.\n\n  가. 요구 금액: 금 ○○○백만원 (₩000,000,000)\n  나. 주요 사업명: 공공 AI 문서 관리 시스템 고도화 사업 외 1건\n  다. 산출 내역: [붙임 산출내역서 참고]\n\n3. 원활한 예산 심의 및 확보가 이루어질 수 있도록 관련 부서의 협조를 당부드립니다."
+    default_body = f"1. 관련 근거: 국가재정법 및 2026년도 예산편성 지침\n2. 주요 현안 사업 추진 및 시급한 재정 소요에 대응하기 위하여 2026년도 제1회 추가경정예산 편성 요구서를 다음과 같이 제출합니다.\n\n  가. 요구 금액: 금 ○○○백만원 (₩000,000,000)\n  나. 주요 사업명: 공공 AI 문서 관리 시스템 고도화 사업 외 1건\n  다. 산출 내역: [붙임 산출내역서 참고]\n\n3. 원활한 예산 심의 및 확보가 이루어질 수 있도록 관련 부서의 협조를 당부드립니다."
 else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
     default_body = "1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
@@ -132,7 +132,7 @@ with col_sec1:
 with col_sec2:
     st.markdown("##### 📎 붙임 문서 (1, 2, 3...)")
     if f'attach_list_{category}' not in st.session_state:
-        st.session_state[f'attach_list_{category}'] = ["[붙임] 2026년도 세부 추진 계획서 1부."]
+        st.session_state[f'attach_list_{category}'] = ["2026년도 세부 추진 계획서 1부."]
         
     if st.button("➕ 붙임 문서 추가"):
         st.session_state[f'attach_list_{category}'].append("")
@@ -141,7 +141,7 @@ with col_sec2:
     updated_attach = []
     for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
         num_label = str(idx + 1)
-        val = st.text_input(f"붙임 문서 [{num_label}]", value=item, key=f"att_{category}_{idx}")
+        val = st.text_input(f"붙임 내용 [{num_label}]", value=item, key=f"att_{category}_{idx}")
         if val.strip():
             updated_attach.append((num_label, val))
 
@@ -165,10 +165,11 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    # 붙임 문서 조립 (1, 2, 3...)
+    # 붙임 문서 조립 (상단에 '붙임'을 한 번만 출력하고 하위에 번호 매기기)
     if updated_attach:
+        full_doc += "붙임\n"
         for num_lbl, text_val in updated_attach:
-            full_doc += f"붙임 {num_lbl}. {text_val}\n"
+            full_doc += f"  {num_lbl}. {text_val}\n"
         full_doc += "\n"
         
     full_doc += "끝."
