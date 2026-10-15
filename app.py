@@ -3,7 +3,7 @@ import time
 
 # 1. 페이지 설정
 st.set_page_config(
-    page_title="공공 AI 문서함 다중 기안(복수안) 표준화 솔루션",
+    page_title="공공 AI 문서함 표준 기안 및 본문 자동화 솔루션",
     page_icon="🏛️",
     layout="wide"
 )
@@ -13,12 +13,13 @@ st.markdown("""
     <style>
     .main-header { font-size: 24px; font-weight: bold; color: #1f77b4; }
     .sub-text { font-size: 14px; color: #555555; }
+    .box { background-color: #f8f9fa; padding: 20px; border-radius: 5px; border: 1px solid #ddd; }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. 헤더 영역
-st.markdown('<p class="main-header">🏛️ 공공기관 문서함 5대 업무 복수안(1·2·3안) AI 표준 기안 솔루션</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-text">내부 결재 및 대외 발송 등 목적에 따라 복수의 안을 추가하고, 대상별 표준 제목을 개별 설정하여 안전하게 등록합니다.</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">🏛️ 공공기관 문서함 5대 업무 AI 표준 기안 및 본문 자동화 솔루션</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-text">표준화된 제목뿐만 아니라, 공공 격식에 맞는 표준 본문 내용, 관련 문서, 붙임 문서 및 마감("끝.") 처리까지 원스톱으로 자동 생성·검토합니다.</p>', unsafe_allow_html=True)
 
 # 4. 사이드바 - 기관 설정 및 카테고리 선택
 with st.sidebar:
@@ -33,103 +34,86 @@ with st.sidebar:
     )
     
     st.markdown("---")
-    st.markdown("### 🎯 복수안 기안 가이드")
-    st.write("• **1안**: 내부 결재 및 보고용\n• **2안**: 유관부서 또는 전체기관 발송용\n• **3안 이상**: 수기 작성 및 추가 대외 기관용")
+    st.markdown("### 🎯 Human-in-the-Loop 프로세스")
+    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서 및 붙임 선택 후 **[최종 등록]**")
 
-# 5. 카테고리별 기본 템플릿 정의
+# 5. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
 if category == "업무분장":
-    default_content = "2026년 상반기 주무관별 담당 사무 지정"
+    default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
+    default_body = f"""1. 관련 근거: 정부조직법 및 당 기관 사무위임 규정\n2. 2026년도 상반기 부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축\n\n3. 각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."""
 elif category == "인사발령":
-    default_content = "2026년 하반기 정기인사 3급 이하 전보"
+    default_title_content = "2026년 하반기 정기인사 3급 이하 전보"
+    default_body = f"""1. 관련 근거: 국가공무원법 제28조 및 당 기관 인사운영지침\n2. 2026년 하반기 정기인사를 아래와 같이 단행하여 효율적인 조직 운영과 현장 대응 역량을 강화하고자 합니다.\n\n  가. 인사 발령 대상: 3급 이하 일반직 공무원\n  나. 부서별 배치 인원: 총 00명\n  다. 부임 일자: 2026. 7. 1. 자로\n\n3. 보직 변경에 따른 업무 공백이 발생하지 않도록 인수인계 철저 및 보안 관리에 만전을 기해 주시기 바랍니다."""
 elif category == "휴직복직":
-    default_content = "육아휴직 신청 및 후임자 업무 대행 지정 (김주무관)"
+    default_title_content = "육아휴직 신청 및 후임자 업무 대행 지정 (김주무관)"
+    default_body = """1. 관련 근거: 국가공무원 복무규정 및 공무원 임용령\n2. 소속 직원의 육아휴직 신청에 따른 업무 공백을 방지하고 원활한 행정 서비스 유지를 위해 후임자 업무 대행자를 아래와 같이 지정합니다.\n\n  가. 휴직자 성명/직급: 주무관 김○○ (행정사무관)\n  나. 휴직 기간: 2026. 8. 1. ~ 2027. 1. 31. (6개월간)\n  다. 업무 대행자: 주무관 이○○ (지정 완료)\n\n3. 대행자는 휴직 기간 동안 해당 사무를 성실히 수행하여 업무 누수가 발생하지 않도록 조치바랍니다."""
 elif category == "예산":
-    default_content = "2026년도 제1회 추가경정예산 편성 요구서 제출"
+    default_title_content = "2026년도 제1회 추가경정예산 편성 요구서 제출"
+    default_body = f"""1. 관련 근거: 국가재정법 및 2026년도 예산편성 지침\n2. 주요 현안 사업 추진 및 시급한 재정 소요에 대응하기 위하여 2026년도 제1회 추가경정예산 편성 요구서를 다음과 같이 제출합니다.\n\n  가. 요구 금액: 금 ○○○백만원 (₩000,000,000)\n  나. 주요 사업명: 공공 AI 문서 관리 시스템 고도화 사업 외 1건\n  다. 산출 내역: [붙임 산출내역서 참고]\n\n3. 원활한 예산 심의 및 확보가 이루어질 수 있도록 관련 부서의 협조를 당부드립니다."""
 else:
-    default_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
+    default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
+    default_body = """1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."""
 
-# 6. 메인 다중 기안 영역 (세션 스테이트를 이용한 동적 안 추가 관리)
-if 'draft_list' not in st.session_state or st.session_state.get('current_category') != category:
-    st.session_state['current_category'] = category
-    # 초기 세팅: 기본 2개 안 제공 (1안: 내부 결재, 2안: 대외 발송)
-    st.session_state['draft_list'] = [
-        {"id": 1, "target": "내부 결재용 (내부문서)", "content": default_content + " (내부 보고안)"},
-        {"id": 2, "target": "전체 부서 / 유관기관 (대외발송)", "content": default_content + " (대외 협조안)"}
-    ]
+# 6. 메인 편집 및 기안 영역
+st.subheader(f"📝 [{category}] 표준 기안서 작성 및 AI 검토기")
+st.markdown("AI가 공공 문서 표준 양식에 맞추어 생성한 **제목과 본문 초안**입니다. 실제 한글 문서 편집기처럼 자유롭게 수정할 수 있습니다.")
 
-st.subheader(f"📝 [{category}] 복수안(1안, 2안...) 기안 및 표준 제목 편집기")
-st.markdown("기안서 내에 포함될 안(Draft)을 추가하고, 발송 대상에 맞추어 제목을 각각 다르게 편집할 수 있습니다.")
+# [1파트] 제목 편집 영역
+st.markdown("#### 1. 표준 제목 설정")
+col_t1, col_t2 = st.columns([3, 1])
+with col_t1:
+    edited_content = st.text_input("핵심 내용 및 목적 편집", value=default_title_content, key=f"title_{category}")
+with col_t2:
+    use_dept = st.checkbox("부서명 포함", value=True)
 
-# 안 추가 버튼
-if st.button("➕ 새로운 안(Draft) 추가하기"):
-    new_id = len(st.session_state['draft_list']) + 1
-    st.session_state['draft_list'].append(
-        {"id": new_id, "target": "수기 작성 / 기타 기관", "content": default_content + f" (제{new_id}안)"}
-    )
-    st.rerun()
-
-# 각 안별 입력 폼 렌더링
-updated_drafts = []
+# 부서명 유무에 따른 동적 제목 조합
 clean_department = department.strip()
+if use_dept and clean_department:
+    final_title = f"[{category}] {edited_content} ({clean_department})"
+else:
+    final_title = f"[{category}] {edited_content}"
 
-for i, draft in enumerate(st.session_state['draft_list']):
-    st.markdown(f"---")
-    cols = st.columns([1, 3])
-    with cols[0]:
-        st.markdown(f"#### **제{draft['id']}안**")
-        target_option = st.selectbox(
-            f"제{draft['id']}안 대상 선택",
-            ["내부 결재용 (내부문서)", "전체 부서 대상", "기타 부서 대상", "수기 작성 / 기타 기관", "직접 입력"],
-            index=0 if draft['id'] == 1 else (1 if draft['id'] == 2 else 3),
-            key=f"target_{draft['id']}_{category}"
-        )
-    with cols[1]:
-        edited_content = st.text_input(
-            f"제{draft['id']}안 핵심 내용 및 목적 편집",
-            value=draft['content'],
-            key=f"content_{draft['id']}_{category}"
-        )
-    
-    # 대상이 '직접 입력'일 경우 추가 텍스트 입력창 제공
-    final_target = target_option
-    if target_option == "직접 입력":
-        custom_target = st.text_input(f"제{draft['id']}안 발송 대상 직접 입력", value="지자체 및 유관기관", key=f"custom_{draft['id']}_{category}")
-        final_target = custom_target
-
-    # 최종 제목 조합 로직 ([카테고리] 핵심내용 [대상표기] (부서명))
-    target_tag = f"[{final_target.split(' ')[0]}]" if "수기" not in final_target and "직접" not in final_target else f"[{final_target}]"
-    
-    if clean_department:
-        combined_title = f"[{category}] {edited_content} - {target_tag} ({clean_department})"
-    else:
-        combined_title = f"[{category}] {edited_content} - {target_tag}"
-        
-    updated_drafts.append({"id": draft['id'], "target": final_target, "title": combined_title})
+st.code(final_title, language="text")
 
 st.markdown("---")
 
-# 7. 2단계 검증 및 최종 실행 영역
-if st.button("🔍 전체 안(Draft) 적용 및 결과 미리보기", type="primary", use_container_width=True):
+# [2파트] 본문 내용 작성 영역 (한글 편집기 스타일)
+st.markdown("#### 2. 표준 본문 내용 작성 (AI 초안)")
+edited_body = st.text_area(
+    "공공 표준 격식에 맞춘 본문 내용을 수정할 수 있습니다.",
+    value=default_body,
+    height=220,
+    key=f"body_{category}"
+)
+
+st.markdown("---")
+
+# [3파트] 관련문서 및 붙임문서 선택 영역
+st.markdown("#### 3. 관련 문서 및 붙임 문서 설정")
+col_a, col_b = st.columns(2)
+
+with col_a:
+    has_related_doc = st.checkbox("📌 관련 문서 있음", value=True)
+    related_doc_text = ""
+    if has_related_doc:
+        related_doc_text = st.text_input("관련 문서 표시명 입력", value="기획예산담당관-1234 (2026. 5. 10.)호 관련")
+
+with col_b:
+    has_attachment = st.checkbox("📎 붙임 문서 있음", value=True)
+    attachment_text = ""
+    if has_attachment:
+        attachment_text = st.text_input("붙임 문서명 입력", value="[붙임] 2026년도 세부 추진 계획서 1부.")
+
+st.markdown("---")
+
+# 7. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
+if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_container_width=True):
     st.session_state['preview_ready'] = True
-    st.session_state['final_drafts'] = updated_drafts
     st.session_state['is_approved'] = False
-
-if st.session_state.get('preview_ready', False):
-    st.markdown("#### 🔎 복수안 표준화 결과 미리보기 (Human-in-the-Loop 검증)")
-    st.info("각 안별로 조합된 최종 메타데이터 형식을 확인하신 후 문제가 없다면 **[최종 문서함 등록 (실행)]** 버튼을 눌러주세요.")
     
-    for d in st.session_state['final_drafts']:
-        st.markdown(f"**[제{d['id']}안 - 대상: {d['target']}]**")
-        st.code(d['title'], language="text")
+    # 최종 문서 포맷 조립 (공공 문서 편제 반영: 관련문서 -> 본문 -> 붙임 -> 끝)
+    full_doc = ""
+    if has_related_doc and related_doc_text.strip():
+        full_doc += f"산정 근거 및 관련: {related_doc_text}\n\n"
     
-    if st.button("🚀 최종 문서함 등록 (실행)", type="primary", use_container_width=True):
-        st.session_state['is_approved'] = True
-
-if st.session_state.get('is_approved', False):
-    st.success(f"🎉 [{org_name}] 표준 문서함에 복수안(총 {len(st.session_state['final_drafts'])}개 안)이 성공적으로 등록되었습니다!")
-    for d in st.session_state.get('final_drafts', []):
-        st.markdown(f"- 제{d['id']}안 등록 완료: `{d['title']}`")
-
-# 8. 하단 푸터
-st.markdown("---")
-st.markdown(f"2026 공공 AI 대전환 챌린지 출품작 시제품 (PoC) | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
+    full_doc += f"{edited_body}\n
