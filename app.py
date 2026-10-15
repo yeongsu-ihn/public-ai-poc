@@ -3,31 +3,38 @@ import time
 
 # 1. 페이지 설정
 st.set_page_config(
-    page_title="온나라 AI 표준기안기 2026",
+    page_title="HRDK-AI 문서기안기",
     page_icon="🏛️",
     layout="wide"
 )
 
-# 2. 스타일링 (한글/온나라 전자결재 프로그램 창 스타일)
+# 2. 스타일링 (한글/온나라 전자결재 프로그램 창 스타일 - 서브 텍스트 크기 조정)
 st.markdown("""
     <style>
     .program-window {
         background-color: #2b2b2b;
         border: 1px solid #444;
         border-radius: 6px;
-        padding: 12px 16px;
+        padding: 14px 18px;
         margin-bottom: 20px;
     }
     .program-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
         color: #ffffff;
         margin: 0;
     }
     .program-subtitle {
+        font-size: 13px;
+        color: #8cd3ff;
+        margin-top: 4px;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    .program-desc {
         font-size: 12px;
         color: #aaaaaa;
-        margin-top: 4px;
+        margin-top: 0;
         margin-bottom: 0;
     }
     </style>
@@ -36,8 +43,8 @@ st.markdown("""
 # 3. 사이드바 - 기관 설정 및 카테고리 선택
 with st.sidebar:
     st.header("⚙️ 기관 및 메타데이터 설정")
-    org_name = st.text_input("소속 기관명", value="○○부/○○청")
-    department = st.text_input("작성 부서명 (비워두면 괄호 생략)", value="기획예산담당관")
+    org_name = st.text_input("소속 기관명", value="한국산업인력공단")
+    department = st.text_input("작성 부서명 (비워두면 괄호 생략)", value="일학습출제부")
     
     st.markdown("---")
     category = st.selectbox(
@@ -66,11 +73,12 @@ else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
     default_body = "1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
 
-# 5. 프로그램 창 이름 스타일의 상단 배너 적용
+# 5. 프로그램 창 이름 스타일의 상단 배너 적용 (요청하신 계층 구조 반영)
 st.markdown(f"""
 <div class="program-window">
-    <p class="program-title">🏛️ [온나라 AI 문서기안기 2026] - 표준 제목 설정 및 AI 기안 검토기 ({category})</p>
-    <p class="program-subtitle">선택한 업무 유형에 맞는 표준 제목과 본문 초안이 자동으로 생성됩니다. 실정에 맞게 수정 후 검토를 진행하세요.</p>
+    <p class="program-title">🏛️ [HRDK-AI 문서기안기]</p>
+    <p class="program-subtitle">표준 제목 설정 및 AI 기안 검토기 ({category})</p>
+    <p class="program-desc">선택한 업무 유형에 맞는 표준 제목과 본문 초안이 자동으로 생성됩니다. 실정에 맞게 수정 후 검토를 진행하세요.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -112,7 +120,7 @@ with col_a:
     has_related_doc = st.checkbox("📌 관련 문서 있음", value=True)
     related_doc_text = ""
     if has_related_doc:
-        related_doc_text = st.text_input("관련 문서 표시명 입력", value="기획예산담당관-1234 (2026. 5. 10.)호 관련")
+        related_doc_text = st.text_input("관련 문서 표시명 입력", value="일학습출제부-1234 (2026. 5. 10.)호 관련")
 
 with col_b:
     has_attachment = st.checkbox("📎 붙임 문서 있음", value=True)
