@@ -197,7 +197,7 @@ with col_sec1:
     with col_chk1:
         use_related = st.checkbox("포함", value=False, key=f"use_rel_{category}")
     with col_lbl1:
-        st.markdown("##### 📌 관련 문서 (가, 나, 다...)")
+        st.markdown("##### 📌 관련 문서 (단일/복수 자동 분기)")
         
     updated_related = []
     if use_related:
@@ -247,7 +247,7 @@ with col_sec2:
 
 st.markdown("---")
 
-# 6. 최종 미리보기 및 등록 버튼 (완벽한 순차적 연쇄 번호 채번 조립 로직)
+# 6. 최종 미리보기 및 등록 버튼 (관련 문서 1개일 때 '가.' 생략 규칙 반영 조립 로직)
 if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary", use_container_width=True):
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
@@ -256,13 +256,16 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
     
     has_rel = use_related and updated_related
     
-    # [채번 1] 관련 문서 유무에 따른 시작 번호 배정
+    # [채번 1] 관련 문서 개수에 따른 동적 조립 (1개면 기호 생략, 2개 이상이면 가, 나, 다 부여)
     current_num = 1
     if has_rel:
-        full_doc += f"{current_num}. 관련:\n"
-        for char_lbl, text_val in updated_related:
-            full_doc += f"  {char_lbl}. {text_val}\n"
-        full_doc += "\n"
+        if len(updated_related) == 1:
+            full_doc += f"{current_num}. 관련: {updated_related[0][1]}\n\n"
+        else:
+            full_doc += f"{current_num}. 관련:\n"
+            for char_lbl, text_val in updated_related:
+                full_doc += f"  {char_lbl}. {text_val}\n"
+            full_doc += "\n"
         current_num += 1
 
     # [채번 2] 동적으로 추가된 본문 항들을 순차적 번호(1, 2, 3, 4...)로 조립
@@ -295,7 +298,7 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
 if st.session_state.get('preview_ready', False):
     st.markdown("---")
     st.markdown("#### ✨ 전자문서시스템 AI 검증 완료본 프리뷰")
-    st.info("공공 서식 정합성 및 다중 편제 번호 체계 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
+    st.info("공공 서식 정합성 및 단일/복수 관련문서 규칙 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
     
     doc_title = st.session_state.get('final_doc_title', '')
     doc_body = st.session_state.get('final_doc_body', '')
