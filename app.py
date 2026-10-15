@@ -198,33 +198,4 @@ with col_sec2:
         
     updated_attach = []
     for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
-        val = st.text_input(f"붙임 내용 {idx + 1} (비워두면 생략)", value=item, key=f"att_{category}_{idx}")
-        if val.strip():
-            updated_attach.append(val.strip())
-
-st.markdown("---")
-
-# 6. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
-if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary", use_container_width=True):
-    st.session_state['preview_ready'] = True
-    st.session_state['is_approved'] = False
-    
-    # 최종 문서 포맷 조립 (관련 문서 유무에 따른 조건부 조립)
-    full_doc = ""
-    
-    # 관련 문서가 있는 경우에만 '관련:' 블록 생성 (없으면 아예 생략)
-    if updated_related:
-        full_doc += "관련:\n"
-        for char_lbl, text_val in updated_related:
-            full_doc += f"  {char_lbl}. {text_val}\n"
-        full_doc += "\n"
-    
-    # 본문 조립
-    full_doc += f"{edited_body}\n\n"
-    
-    # 붙임 문서 규격 조립 (붙임 문서가 있는 경우에만 처리)
-    if len(updated_attach) == 1:
-        full_doc += f"붙임  {updated_attach[0]}  끝."
-    elif len(updated_attach) > 1:
-        full_doc += f"붙임  1. {updated_attach[0]}\n"
-        for idx in range(1, len(updated_
+        val = st
