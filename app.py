@@ -102,9 +102,9 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🧠 AI 워크플로우 (HITL)")
-    st.caption("1. 순수 본문 단락 동적 추가 및 편집\n2. 관련문서 및 붙임 포함 여부 선택\n3. 최종 버튼 클릭 시 공공 표준 서식 자동 조합")
+    st.caption("1. 다중 본문 항 동적 추가 및 편집\n2. 관련문서 및 붙임 포함 여부 선택\n3. 최종 버튼 클릭 시 공공 표준 서식 자동 조합")
 
-# 4. 카테고리별 초기 본문 단락 리스트 매핑
+# 4. 카테고리별 초기 본문 단락 리스트 매핑 (모든 카테고리 다중 항 지원)
 if category == "업무분장":
     default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
     initial_body_paragraphs = [
@@ -247,7 +247,7 @@ with col_sec2:
 
 st.markdown("---")
 
-# 6. 최종 미리보기 및 등록 버튼 (관련 문서 1개일 때 '가.' 생략 규칙 반영 조립 로직)
+# 6. 최종 미리보기 및 등록 버튼 (지능형 연쇄 채번 및 공공 표준 조립 로직)
 if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary", use_container_width=True):
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
@@ -268,7 +268,7 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
             full_doc += "\n"
         current_num += 1
 
-    # [채번 2] 동적으로 추가된 본문 항들을 순차적 번호(1, 2, 3, 4...)로 조립
+    # [채번 2] 동적으로 추가된 본문 항들을 순차적 번호(1, 2, 3, 4...)로 연쇄 조립
     for p_content in updated_paragraphs:
         full_doc += f"{current_num}. {p_content}\n\n"
         current_num += 1
@@ -298,7 +298,7 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
 if st.session_state.get('preview_ready', False):
     st.markdown("---")
     st.markdown("#### ✨ 전자문서시스템 AI 검증 완료본 프리뷰")
-    st.info("공공 서식 정합성 및 단일/복수 관련문서 규칙 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
+    st.info("공공 서식 정합성 및 다중 편제 번호 체계 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
     
     doc_title = st.session_state.get('final_doc_title', '')
     doc_body = st.session_state.get('final_doc_body', '')
