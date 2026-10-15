@@ -95,4 +95,54 @@ with col_a:
     has_related_doc = st.checkbox("📌 관련 문서 있음", value=True)
     related_doc_text = ""
     if has_related_doc:
-        related_doc_text = st.text_input("관련 문서 표시명 입력", value="기획예산담당관-1234 (2026. 5. 10.)호 관련
+        related_doc_text = st.text_input("관련 문서 표시명 입력", value="기획예산담당관-1234 (2026. 5. 10.)호 관련")
+
+with col_b:
+    has_attachment = st.checkbox("📎 붙임 문서 있음", value=True)
+    attachment_text = ""
+    if has_attachment:
+        attachment_text = st.text_input("붙임 문서명 입력", value="[붙임] 2026년도 세부 추진 계획서 1부.")
+
+st.markdown("---")
+
+# 7. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
+if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_container_width=True):
+    st.session_state['preview_ready'] = True
+    st.session_state['is_approved'] = False
+    
+    # 최종 문서 포맷 조립 (관련문서 -> 본문 -> 붙임 -> 끝)
+    full_doc = ""
+    if has_related_doc and related_doc_text.strip():
+        full_doc += f"산정 근거 및 관련: {related_doc_text}\n\n"
+    
+    full_doc += f"{edited_body}\n\n"
+    
+    if has_attachment and attachment_text.strip():
+        full_doc += f"{attachment_text}\n\n"
+        
+    full_doc += "끝."
+    
+    st.session_state['final_doc_title'] = final_title
+    st.session_state['final_doc_body'] = full_doc
+
+# 미리보기 결과 출력
+if st.session_state.get('preview_ready', False):
+    st.markdown("---")
+    st.markdown("#### 🔎 전자문서시스템 최종 기안본 미리보기 (Human-in-the-Loop)")
+    st.info("아래의 최종 기안서 양식을 확인하신 후 결재 상신 및 문서함 등록을 진행해 주세요.")
+    
+    st.markdown(f"**[제목]** `{st.session_state['final_doc_title']}`")
+    st.markdown("**[본문 내용 및 편제]**")
+    st.code(st.session_state['final_doc_body'], language="text")
+    
+    st.markdown("")
+    if st.button("🚀 결재 상신 및 표준 문서함 등록 (실행)", type="primary", use_container_width=True):
+        st.session_state['is_approved'] = True
+
+if st.session_state.get('is_approved', False):
+    st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 성공적으로 등록되었습니다!")
+    st.markdown(f"**공식 등록된 메타데이터 제목:** `{st.session_state.get('final_doc_title')}`")
+
+# 8. 하단 푸터
+st.markdown("---")
+st.markdown(f"2026 공공 AI 대전환 챌린지 출품작 시제품 (PoC) | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
