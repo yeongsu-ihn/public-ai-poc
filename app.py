@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. 스타일링 (한글/온나라 전자결재 프로그램 창 스타일 - 서브 텍스트 크기 조정)
+# 2. 스타일링 (한글/온나라 전자결재 프로그램 창 스타일)
 st.markdown("""
     <style>
     .program-window {
@@ -28,14 +28,8 @@ st.markdown("""
         font-size: 13px;
         color: #8cd3ff;
         margin-top: 4px;
-        margin-bottom: 6px;
-        font-weight: 500;
-    }
-    .program-desc {
-        font-size: 12px;
-        color: #aaaaaa;
-        margin-top: 0;
         margin-bottom: 0;
+        font-weight: 500;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -73,12 +67,14 @@ else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
     default_body = "1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
 
-# 5. 프로그램 창 이름 스타일의 상단 배너 적용 (요청하신 계층 구조 반영)
+# 5. 프로그램 창 이름 스타일의 상단 배너 적용 (요청사항 반영)
+data_title = f"🏛️ [HRDK-AI 문서기안기]"
+data_sub = f"표준 제목 설정 및 AI 기안 검토기"
+
 st.markdown(f"""
 <div class="program-window">
-    <p class="program-title">🏛️ [HRDK-AI 문서기안기]</p>
-    <p class="program-subtitle">표준 제목 설정 및 AI 기안 검토기 ({category})</p>
-    <p class="program-desc">선택한 업무 유형에 맞는 표준 제목과 본문 초안이 자동으로 생성됩니다. 실정에 맞게 수정 후 검토를 진행하세요.</p>
+    <p class="program-title">{data_title}</p>
+    <p class="program-subtitle">{data_sub}</p>
 </div>
 """, unsafe_allow_html=True)
 
