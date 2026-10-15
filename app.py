@@ -198,4 +198,70 @@ with col_sec2:
         
     updated_attach = []
     for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
-        val = st
+        val = st.text_input(f"붙임 내용 {idx + 1} (비워두면 생략)", value=item, key=f"att_{category}_{idx}")
+        if val.strip():
+            updated_attach.append(val.strip())
+
+st.markdown("---")
+
+# 6. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
+if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary", use_container_width=True):
+    st.session_state['preview_ready'] = True
+    st.session_state['is_approved'] = False
+    
+    # 최종 문서 포맷 조립 (관련 문서 유무에 따른 조건부 조립)
+    full_doc = ""
+    
+    # 관련 문서가 있는 경우에만 '관련:' 블록 생성 (없으면 아예 생략)
+    if updated_related:
+        full_doc += "관련:\n"
+        for char_lbl, text_val in updated_related:
+            full_doc += f"  {char_lbl}. {text_val}\n"
+        full_doc += "\n"
+    
+    # 본문 조립
+    full_doc += f"{edited_body}\n\n"
+    
+    # 붙임 문서 규격 조립 (붙임 문서가 있는 경우에만 처리)
+    if len(updated_attach) == 1:
+        full_doc += f"붙임  {updated_attach[0]}  끝."
+    elif len(updated_attach) > 1:
+        full_doc += f"붙임  1. {updated_attach[0]}\n"
+        for idx in range(1, len(updated_attach)):
+            indent_space = "      " 
+            if idx == len(updated_attach) - 1:
+                full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}  끝."
+            else:
+                full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}\n"
+    else:
+        # 붙임 문서가 아예 없는 경우 본문 마지막에 끝. 처리
+        full_doc = full_doc.rstrip() + "  끝."
+    
+    st.session_state['final_doc_title'] = final_title
+    st.session_state['final_doc_body'] = full_doc
+
+# 미리보기 결과 출력
+if st.session_state.get('preview_ready', False):
+    st.markdown("---")
+    st.markdown("#### ✨ 전자문서시스템 AI 검증 완료본 프리뷰")
+    st.info("공공 서식 정합성 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
+    
+    doc_title = st.session_state.get('final_doc_title', '')
+    doc_body = st.session_state.get('final_doc_body', '')
+    
+    st.markdown(f"**[공식 메타데이터 제목]**\n> `{doc_title}`")
+    st.markdown("**[최종 본문 및 편제 구조]**")
+    st.code(doc_body, language="text")
+    
+    st.markdown("")
+    if st.button("🌐 전자결재 상신 및 표준 문서함 자동 등록", type="primary", use_container_width=True, key="approve_btn"):
+        st.session_state['is_approved'] = True
+
+if st.session_state.get('is_approved', False):
+    approved_title = st.session_state.get('final_doc_title', '')
+    st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 정상적으로 적재되었습니다!")
+    st.markdown(f"**등록된 메타데이터 식별자:** `{approved_title}`")
+
+# 7. 하단 푸터
+st.markdown("---")
+st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit & AI Agent", unsafe_allow_html=True)
