@@ -152,7 +152,7 @@ st.code(final_title, language="text")
 
 st.markdown("---")
 
-# [2파트] 본문 내용 작성 영역 (메인 내용과 조치/당부 사항 분리 편집)
+# [2파트] 본문 내용 작성 영역
 st.markdown("#### 💡 2. 본문 내용 작성 (순수 알맹이)")
 edited_body_main = st.text_area(
     "주요 추진 목적 및 하위 항목(가, 나, 다) 내용",
@@ -293,4 +293,14 @@ if st.session_state.get('preview_ready', False):
     st.code(doc_body, language="text")
     
     st.markdown("")
-    if st.button("🌐 전자
+    if st.button("🌐 전자결재 상신 및 표준 문서함 자동 등록", type="primary", use_container_width=True, key="approve_btn"):
+        st.session_state['is_approved'] = True
+
+if st.session_state.get('is_approved', False):
+    approved_title = st.session_state.get('final_doc_title', '')
+    st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 정상적으로 적재되었습니다!")
+    st.markdown(f"**등록된 메타데이터 식별자:** `{approved_title}`")
+
+# 7. 하단 푸터
+st.markdown("---")
+st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit & AI Agent", unsafe_allow_html=True)
