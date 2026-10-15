@@ -104,7 +104,7 @@ with st.sidebar:
     st.markdown("### 🧠 AI 워크플로우 (HITL)")
     st.caption("1. 순수 본문 및 메타데이터 설정\n2. 관련문서 및 붙임 포함 여부 선택\n3. 최종 버튼 클릭 시 공공 표준 서식 자동 조합")
 
-# 4. 카테고리별 순수 본문 초안 매핑 (관련/붙임이 제외된 알맹이 내용)
+# 4. 카테고리별 순수 본문 초안 매핑
 if category == "업무분장":
     default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
     default_body = f"부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축\n\n각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
@@ -239,7 +239,6 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
         body_start_num = 1  # 관련 문서가 없으면 본문은 1번부터 시작
 
     # [조합 2] 본문 내용 조립 (시작 번호 동적 치환)
-    # 초안 본문의 첫 줄 번호("1. ")를 상황에 맞게 1번 또는 2번으로 자동 변경
     raw_body = edited_body.strip()
     if raw_body.startswith("1. "):
         formatted_body = f"{body_start_num}. " + raw_body[3:]
@@ -248,8 +247,10 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
         
     full_doc += f"{formatted_body}\n\n"
     
-    # [조합 3] 붙임 문서 조립 및 끝. 마감 처리
-    if use_attach and updated_attach:
+    # [조합 3] 붙임 문서가 체크되어 있고 내용이 있는 경우에만 조립 및 끝. 마감 처리
+    has_att = use_attach and updated_attach
+    
+    if has_att:
         if len(updated_attach) == 1:
             full_doc += f"붙임  {updated_attach[0]}  끝."
         else:
@@ -261,7 +262,7 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
                 else:
                     full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}\n"
     else:
-        # 붙임 문서가 없으면 본문 마지막에 두 칸 띄우고 끝. 처리
+        # 붙임 문서가 체크 해제되었거나 없으면 본문 마지막에 두 칸 띄우고 끝. 처리
         full_doc = full_doc.rstrip() + "  끝."
     
     st.session_state['final_doc_title'] = final_title
