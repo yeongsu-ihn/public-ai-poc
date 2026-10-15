@@ -3,7 +3,7 @@ import time
 
 # 1. 페이지 설정
 st.set_page_config(
-    page_title="공공 AI 문서함 표준 기안 및 본문 자동화 솔루션",
+    page_title="공공 AI 문서함 표준 기안 솔루션",
     page_icon="🏛️",
     layout="wide"
 )
@@ -11,16 +11,11 @@ st.set_page_config(
 # 2. 스타일링 (공공기관 느낌의 깔끔한 디자인)
 st.markdown("""
     <style>
-    .main-header { font-size: 24px; font-weight: bold; color: #1f77b4; }
-    .sub-text { font-size: 14px; color: #555555; }
+    .main-header { font-size: 22px; font-weight: bold; color: #1f77b4; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. 헤더 영역
-st.markdown('<p class="main-header">🏛️ 공공기관 문서함 5대 업무 AI 표준 기안 및 본문 자동화 솔루션</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-text">표준화된 제목뿐만 아니라, 공공 격식에 맞는 표준 본문 내용, 관련 문서, 붙임 문서 및 마감("끝.") 처리까지 원스톱으로 자동 생성·검토합니다.</p>', unsafe_allow_html=True)
-
-# 4. 사이드바 - 기관 설정 및 카테고리 선택
+# 3. 사이드바 - 기관 설정 및 카테고리 선택
 with st.sidebar:
     st.header("⚙️ 기관 및 메타데이터 설정")
     org_name = st.text_input("소속 기관명", value="○○부/○○청")
@@ -36,7 +31,7 @@ with st.sidebar:
     st.markdown("### 🎯 Human-in-the-Loop 프로세스")
     st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서 및 붙임 선택 후 **[최종 등록]**")
 
-# 5. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
+# 4. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
 if category == "업무분장":
     default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
     default_body = f"1. 관련 근거: 정부조직법 및 당 기관 사무위임 규정\n2. 2026년도 상반기 부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축\n\n3. 각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
@@ -53,9 +48,9 @@ else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
     default_body = "1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
 
-# 6. 메인 편집 및 기안 영역
-st.subheader(f"📝 [{category}] 표준 기안서 작성 및 AI 검토기")
-st.markdown("AI가 공공 문서 표준 양식에 맞추어 생성한 **제목과 본문 초안**입니다. 실제 한글 문서 편집기처럼 자유롭게 수정할 수 있습니다.")
+# 5. 메인 편집 및 기안 영역 (요청하신 타이틀 반영)
+st.markdown(f'<p class="main-header">🏛️ 표준 제목 설정 및 AI 기안 검토기 ({category})</p>', unsafe_allow_html=True)
+st.markdown("선택한 업무 유형에 맞는 표준 제목과 본문 초안이 자동으로 생성됩니다. 실정에 맞게 수정 후 검토를 진행하세요.")
 
 # [1파트] 제목 편집 영역
 st.markdown("#### 1. 표준 제목 설정")
@@ -105,7 +100,7 @@ with col_b:
 
 st.markdown("---")
 
-# 7. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
+# 6. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
 if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_container_width=True):
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
@@ -143,6 +138,6 @@ if st.session_state.get('is_approved', False):
     st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 성공적으로 등록되었습니다!")
     st.markdown(f"**공식 등록된 메타데이터 제목:** `{st.session_state.get('final_doc_title')}`")
 
-# 8. 하단 푸터
+# 7. 하단 푸터
 st.markdown("---")
 st.markdown(f"2026 공공 AI 대전환 챌린지 출품작 시제품 (PoC) | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
