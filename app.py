@@ -24,7 +24,7 @@ st.markdown('<p class="sub-text">표준 템플릿 기반으로 제목을 편집�
 with st.sidebar:
     st.header("⚙️ 기관 및 메타데이터 설정")
     org_name = st.text_input("소속 기관명", value="○○부/○○청")
-    department = st.text_input("작성 부서명", value="기획예산담당관")
+    department = st.text_input("작성 부서명 (비워두면 괄호 생략)", value="기획예산담당관")
     
     st.markdown("---")
     category = st.selectbox(
@@ -36,7 +36,7 @@ with st.sidebar:
     st.markdown("### 🎯 2단계 검증 프로세스")
     st.write("1. 템플릿 내용 수정 후 **[적용 (미리보기)]** 클릭\n2. 변환 결과 확인 후 **[최종 등록 (실행)]**")
 
-# 5. 카테고리별 핵심 내용 템플릿 정의 (부서/카테고리 중복 제거 깔끔한 포맷)
+# 5. 카테고리별 핵심 내용 템플릿 정의
 if category == "업무분장":
     default_content = "2026년 상반기 주무관별 담당 사무 지정"
 elif category == "인사발령":
@@ -50,7 +50,7 @@ else:
 
 # 6. 메인 편집 영역
 st.subheader(f"📝 [{category}] 표준 문서 제목 편집기")
-st.markdown("템플릿의 핵심 내용을 기관 실정에 맞게 수정해주세요. (카테고리 및 부서명은 자동 조합됩니다)")
+st.markdown("템플릿의 핵심 내용을 수정해주세요. 작성부서명을 비워두면 괄호는 자동으로 생략됩니다.")
 
 # 사용자가 핵심 내용만 자유롭게 수정
 edited_content = st.text_input(
@@ -59,8 +59,12 @@ edited_content = st.text_input(
     key=f"content_{category}"
 )
 
-# 최종 조합될 완성본 실시간 계산
-final_preview_title = f"[{category}] {edited_content} ({department})"
+# 부서명 유무에 따른 동적 포맷 조합 로직 (부서명이 없으면 괄호 생략)
+clean_department = department.strip()
+if clean_department:
+    final_preview_title = f"[{category}] {edited_content} ({clean_department})"
+else:
+    final_preview_title = f"[{category}] {edited_content}"
 
 col_btn1, col_btn2 = st.columns(2)
 with col_btn1:
