@@ -123,4 +123,69 @@ with col_sec1:
     updated_related = []
     hangul_chars = ["가", "나", "다", "라", "마", "바", "사"]
     for idx, item in enumerate(st.session_state[f'related_list_{category}']):
-        char_label = hangul_chars[idx] if idx < len
+        if idx < len(hangul_chars):
+            char_label = hangul_chars[idx]
+        else:
+            char_label = f"({idx+1})"
+            
+        val = st.text_input(f"관련 문서 [{char_label}]", value=item, key=f"rel_{category}_{idx}")
+        if val.strip():
+            updated_related.append((char_label, val))
+
+# --- 붙임 문서 세션 상태 관리 ---
+with col_sec2:
+    st.markdown("##### 📎 붙임 문서 (공문서 규정 서식)")
+    if f'attach_list_{category}' not in st.session_state:
+        st.session_state[f'attach_list_{category}'] = ["2026년도 세부 추진 계획서 1부."]
+        
+    if st.button("➕ 붙임 문서 추가"):
+        st.session_state[f'attach_list_{category}'].append("")
+        st.rerun()
+        
+    updated_attach = []
+    for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
+        val = st.text_input(f"붙임 내용 {idx + 1}", value=item, key=f"att_{category}_{idx}")
+        if val.strip():
+            updated_attach.append(val.strip())
+
+st.markdown("---")
+
+# 6. 최종 미리보기 및 등록 버튼 (Human-in-the-Loop)
+if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_container_width=True):
+    st.session_state['preview_ready'] = True
+    st.session_state['is_approved'] = False
+    
+    # 최종 문서 포맷 조립
+    full_doc = ""
+    
+    # 관련 문서 조립 (가, 나, 다...)
+    if updated_related:
+        full_doc += "산정 근거 및 관련:\n"
+        for char_lbl, text_val in updated_related:
+            full_doc += f"  {char_lbl}. {text_val}\n"
+        full_doc += "\n"
+    
+    # 본문 조립
+    full_doc += f"{edited_body}\n\n"
+    
+    # 붙임 문서 규격 조립 (공공기관 문서 작성 규정 적용)
+    if len(updated_attach) == 1:
+        full_doc += f"붙임  {updated_attach[0]}  끝."
+    elif len(updated_attach) > 1:
+        full_doc += f"붙임  1. {updated_attach[0]}\n"
+        for idx in range(1, len(updated_attach)):
+            if idx == len(updated_attach) - 1:
+                full_doc += f"      {idx + 1}. {updated_attach[idx]}  끝."
+            else:
+                full_doc += f"      {idx + 1}. {updated_attach[idx]}\n"
+    else:
+        full_doc += "  끝."
+    
+    st.session_state['final_doc_title'] = final_title
+    st.session_state['final_doc_body'] = full_doc
+
+# 미리보기 결과 출력
+if st.session_state.get('preview_ready', False):
+    st.markdown("---")
+    st.markdown("#### 🔎 전자문서시스템 최종 기안본 미리보기 (Human-in-the-Loop)")
+    st.info("아래의 최종 기안서 양식을 확인하신 후 결재 상신 및 문서
