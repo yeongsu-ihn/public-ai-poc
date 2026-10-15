@@ -222,12 +222,13 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
     # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    # 붙임 문서 규격 조립 (세로 위치 정렬 및 끝. 마감 처리)
+    # 붙임 문서 규격 조립 (붙임 글자와 1, 2번 숫자 세로 정렬 정밀 교정)
     if len(updated_attach) == 1:
         full_doc += f"붙임  {updated_attach[0]}  끝."
     elif len(updated_attach) > 1:
         full_doc += f"붙임  1. {updated_attach[0]}\n"
         for idx in range(1, len(updated_attach)):
+            # '붙임  ' 글자 폭에 정확히 맞춘 고정 공백 (숫자 '1.'과 '2.'의 위치가 세로로 일치하도록 설정)
             indent_space = "      " 
             if idx == len(updated_attach) - 1:
                 full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}  끝."
