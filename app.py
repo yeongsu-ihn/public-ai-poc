@@ -48,7 +48,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🎯 Human-in-the-Loop 프로세스")
-    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서(가,나,다) 및 붙임 규격(1개/다수) 설정 후 **[최종 등록]**")
+    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서(가,나,다) 및 붙임 규격 설정 후 **[최종 등록]**")
 
 # 4. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
 if category == "업무분장":
@@ -155,7 +155,7 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
     
-    # 최종 문서 포맷 조립
+    # 최종 문서 포맷 조립 (정석 규격: 붙임 1. 이 같은 줄에 시작)
     full_doc = ""
     
     # 관련 문서 조립 (가, 나, 다...)
@@ -168,18 +168,20 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    # 붙임 문서 규격 조립 (공공기관 문서 작성 규정 적용)
+    # 붙임 문서 규격 조립 (공공 문서 규정 준수)
     if len(updated_attach) == 1:
         full_doc += f"붙임  {updated_attach[0]}  끝."
     elif len(updated_attach) > 1:
+        # '붙임  1. ...' 형태로 첫 줄에 함께 배치
         full_doc += f"붙임  1. {updated_attach[0]}\n"
         for idx in range(1, len(updated_attach)):
+            indent_space = "      "  # '붙임  ' 글자 폭에 맞춘 들여쓰기 공백
             if idx == len(updated_attach) - 1:
-                full_doc += f"      {idx + 1}. {updated_attach[idx]}  끝."
+                full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}  끝."
             else:
-                full_doc += f"      {idx + 1}. {updated_attach[idx]}\n"
+                full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}\n"
     else:
-        full_doc += "  끝."
+        full_doc = full_doc.rstrip() + "  끝."
     
     st.session_state['final_doc_title'] = final_title
     st.session_state['final_doc_body'] = full_doc
@@ -208,4 +210,4 @@ if st.session_state.get('is_approved', False):
 
 # 7. 하단 푸터
 st.markdown("---")
-st.markdown(f"2026 공공 AI 대전환 챌린지 출품작 시제품 (PoC) | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
+st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
