@@ -13,7 +13,6 @@ st.markdown("""
     <style>
     .main-header { font-size: 24px; font-weight: bold; color: #1f77b4; }
     .sub-text { font-size: 14px; color: #555555; }
-    .box { background-color: #f8f9fa; padding: 20px; border-radius: 5px; border: 1px solid #ddd; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -43,7 +42,7 @@ if category == "업무분장":
     default_body = f"1. 관련 근거: 정부조직법 및 당 기관 사무위임 규정\n2. 2026년도 상반기 부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축\n\n3. 각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
 elif category == "인사발령":
     default_title_content = "2026년 하반기 정기인사 3급 이하 전보"
-    default_body = f"1. 관련 근거: 국가공무원법 제28조 및 당 기관 인사운영지침\n2. 2026년 하반기 정기인사를 아래와 같이 단행하여 효율적인 조직 운영과 현장 대응 역량을 강화하고자 합니다.\n\n  가. 인사 발령 대상: 3급 이하 일반직 공무원\n  나. 부서별 배치 인원: 총 00명\n  다. 부임 일자: 2026. 7. 1. 자로\n\n3. 보직 변경에 따른 업무 공백이 발생하지 않도록 인수인계 철저 및 보안 관리에 만전을 기해 주시기 바랍니다."
+    default_body = "1. 관련 근거: 국가공무원법 제28조 및 당 기관 인사운영지침\n2. 2026년 하반기 정기인사를 아래와 같이 단행하여 효율적인 조직 운영과 현장 대응 역량을 강화하고자 합니다.\n\n  가. 인사 발령 대상: 3급 이하 일반직 공무원\n  나. 부서별 배치 인원: 총 00명\n  다. 부임 일자: 2026. 7. 1. 자로\n\n3. 보직 변경에 따른 업무 공백이 발생하지 않도록 인수인계 철저 및 보안 관리에 만전을 기해 주시기 바랍니다."
 elif category == "휴직복직":
     default_title_content = "육아휴직 신청 및 후임자 업무 대행 지정 (김주무관)"
     default_body = "1. 관련 근거: 국가공무원 복무규정 및 공무원 임용령\n2. 소속 직원의 육아휴직 신청에 따른 업무 공백을 방지하고 원활한 행정 서비스 유지를 위해 후임자 업무 대행자를 아래와 같이 지정합니다.\n\n  가. 휴직자 성명/직급: 주무관 김○○ (행정사무관)\n  나. 휴직 기간: 2026. 8. 1. ~ 2027. 1. 31. (6개월간)\n  다. 업무 대행자: 주무관 이○○ (지정 완료)\n\n3. 대행자는 휴직 기간 동안 해당 사무를 성실히 수행하여 업무 누수가 발생하지 않도록 조치바랍니다."
@@ -77,7 +76,7 @@ st.code(final_title, language="text")
 
 st.markdown("---")
 
-# [2파트] 본문 내용 작성 영역 (한글 편집기 스타일)
+# [2파트] 본문 내용 작성 영역
 st.markdown("#### 2. 표준 본문 내용 작성 (AI 초안)")
 edited_body = st.text_area(
     "공공 표준 격식에 맞춘 본문 내용을 수정할 수 있습니다.",
@@ -111,7 +110,7 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
     
-    # 최종 문서 포맷 조립 (공공 문서 편제 반영: 관련문서 -> 본문 -> 붙임 -> 끝)
+    # 최종 문서 포맷 조립 (관련문서 -> 본문 -> 붙임 -> 끝)
     full_doc = ""
     if has_related_doc and related_doc_text.strip():
         full_doc += f"산정 근거 및 관련: {related_doc_text}\n\n"
@@ -126,14 +125,18 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['final_doc_title'] = final_title
     st.session_state['final_doc_body'] = full_doc
 
-# 미리보기 결과 출력
+# 미리보기 결과 출력 (안전한 Streamlit 컴포넌트 사용)
 if st.session_state.get('preview_ready', False):
+    st.markdown("---")
     st.markdown("#### 🔎 전자문서시스템 최종 기안본 미리보기 (Human-in-the-Loop)")
     st.info("아래의 최종 기안서 양식을 확인하신 후 결재 상신 및 문서함 등록을 진행해 주세요.")
     
-    with st.container():
-        st.markdown(f"""
-        <div class="box">
-            <b>[제목]</b> {st.session_state['final_doc_title']}<br><hr style="margin: 10px 0;">
-            <b>[본문 내용]</b><br>
-            <pre style="font-family: inherit; white-space: pre
+    st.markdown(f"**[제목]** `{st.session_state['final_doc_title']}`")
+    st.markdown("**[본문 내용 및 편제]**")
+    st.code(st.session_state['final_doc_body'], language="text")
+    
+    st.markdown("")
+    if st.button("🚀 결재 상신 및 표준 문서함 등록 (실행)", type="primary", use_container_width=True):
+        st.session_state['is_approved'] = True
+
+if st.session_state.get('is_approved',
