@@ -155,7 +155,7 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
     
-    # 최종 문서 포맷 조립 (정석 규격: 붙임 1. 이 같은 줄에 시작)
+    # 최종 문서 포맷 조립 (세로 줄 간격 정렬 맞춤)
     full_doc = ""
     
     # 관련 문서 조립 (가, 나, 다...)
@@ -168,14 +168,14 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    # 붙임 문서 규격 조립 (공공 문서 규정 준수)
+    # 붙임 문서 규격 조립 (붙임 글자와 번호 세로 위치 완벽 정렬)
     if len(updated_attach) == 1:
         full_doc += f"붙임  {updated_attach[0]}  끝."
     elif len(updated_attach) > 1:
-        # '붙임  1. ...' 형태로 첫 줄에 함께 배치
         full_doc += f"붙임  1. {updated_attach[0]}\n"
         for idx in range(1, len(updated_attach)):
-            indent_space = "      "  # '붙임  ' 글자 폭에 맞춘 들여쓰기 공백
+            # '붙임  '의 글자 폭(공백 포함)과 동일하게 맞춘 정렬 공백
+            indent_space = "      " 
             if idx == len(updated_attach) - 1:
                 full_doc += f"{indent_space}{idx + 1}. {updated_attach[idx]}  끝."
             else:
