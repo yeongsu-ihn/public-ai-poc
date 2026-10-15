@@ -102,29 +102,39 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🧠 AI 워크플로우 (HITL)")
-    st.caption("1. 순수 본문 및 메타데이터 설정\n2. 관련문서 및 붙임 포함 여부 선택\n3. 최종 버튼 클릭 시 공공 표준 서식 자동 조합")
+    st.caption("1. 순수 본문 단락 동적 추가 및 편집\n2. 관련문서 및 붙임 포함 여부 선택\n3. 최종 버튼 클릭 시 공공 표준 서식 자동 조합")
 
-# 4. 카테고리별 본문 구성요소 매핑 (메인 목적과 당부 사항을 분리 관리)
+# 4. 카테고리별 초기 본문 단락 리스트 매핑
 if category == "업무분장":
     default_title_content = "2026년 상반기 주무관별 담당 사무 지정"
-    body_main = f"부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축"
-    body_closing = "각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
+    initial_body_paragraphs = [
+        f"부서 내 원활한 업무 추진과 책임 행정 구현을 위하여 다음과 같이 주무관별 담당 사무를 지정하여 운영하고자 합니다.\n\n  가. 대상 부서: {department if department else '해당 부서'}\n  나. 시행 일자: 2026. 3. 1. 기준\n  다. 주요 내용: 단위 과제별 주·보조 담당자 지정 및 상시 협업 체계 구축",
+        "각 담당관 및 팀에서는 소관 사무에 차질이 없도록 조치하여 주시기 바랍니다."
+    ]
 elif category == "인사발령":
     default_title_content = "2026년 하반기 정기인사 3급 이하 전보"
-    body_main = "2026년 하반기 정기인사를 아래와 같이 단행하여 효율적인 조직 운영과 현장 대응 역량을 강화하고자 합니다.\n\n  가. 인사 발령 대상: 3급 이하 일반직 공무원\n  나. 부서별 배치 인원: 총 00명\n  다. 부임 일자: 2026. 7. 1. 자로"
-    body_closing = "보직 변경에 따른 업무 공백이 발생하지 않도록 인수인계 철저 및 보안 관리에 만전을 기해 주시기 바랍니다."
+    initial_body_paragraphs = [
+        "2026년 하반기 정기인사를 아래와 같이 단행하여 효율적인 조직 운영과 현장 대응 역량을 강화하고자 합니다.\n\n  가. 인사 발령 대상: 3급 이하 일반직 공무원\n  나. 부서별 배치 인원: 총 00명\n  다. 부임 일자: 2026. 7. 1. 자로",
+        "보직 변경에 따른 업무 공백이 발생하지 않도록 인수인계 철저 및 보안 관리에 만전을 기해 주시기 바랍니다."
+    ]
 elif category == "휴직복직":
     default_title_content = "육아휴직 신청 및 후임자 업무 대행 지정 (김주무관)"
-    body_main = "소속 직원의 육아휴직 신청에 따른 업무 공백을 방지하고 원활한 행정 서비스 유지를 위해 후임자 업무 대행자를 아래와 같이 지정합니다.\n\n  가. 휴직자 성명/직급: 주무관 김○○ (행정사무관)\n  나. 휴직 기간: 2026. 8. 1. ~ 2027. 1. 31. (6개월간)\n  다. 업무 대행자: 주무관 이○○ (지정 완료)"
-    body_closing = "대행자는 휴직 기간 동안 해당 사무를 성실히 수행하여 업무 누수가 발생하지 않도록 조치바랍니다."
+    initial_body_paragraphs = [
+        "소속 직원의 육아휴직 신청에 따른 업무 공백을 방지하고 원활한 행정 서비스 유지를 위해 후임자 업무 대행자를 아래와 같이 지정합니다.\n\n  가. 휴직자 성명/직급: 주무관 김○○ (행정사무관)\n  나. 휴직 기간: 2026. 8. 1. ~ 2027. 1. 31. (6개월간)\n  다. 업무 대행자: 주무관 이○○ (지정 완료)",
+        "대행자는 휴직 기간 동안 해당 사무를 성실히 수행하여 업무 누수가 발생하지 않도록 조치바랍니다."
+    ]
 elif category == "예산":
     default_title_content = "2026년도 제1회 추가경정예산 편성 요구서 제출"
-    body_main = "주요 현안 사업 추진 및 시급한 재정 소요에 대응하기 위하여 2026년도 제1회 추가경정예산 편성 요구서를 다음과 같이 제출합니다.\n\n  가. 요구 금액: 금 ○○○백만원 (₩000,000,000)\n  나. 주요 사업명: 공공 AI 문서 관리 시스템 고도화 사업 외 1건\n  다. 산출 내역: [붙임 산출내역서 참고]"
-    body_closing = "원활한 예산 심의 및 확보가 이루어질 수 있도록 관련 부서의 협조를 당부드립니다."
+    initial_body_paragraphs = [
+        "주요 현안 사업 추진 및 시급한 재정 소요에 대응하기 위하여 2026년도 제1회 추가경정예산 편성 요구서를 다음과 같이 제출합니다.\n\n  가. 요구 금액: 금 ○○○백만원 (₩000,000,000)\n  나. 주요 사업명: 공공 AI 문서 관리 시스템 고도화 사업 외 1건\n  다. 산출 내역: [붙임 산출내역서 참고]",
+        "원활한 예산 심의 및 확보가 이루어질 수 있도록 관련 부서의 협조를 당부드립니다."
+    ]
 else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
-    body_main = "담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록"
-    body_closing = "세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
+    initial_body_paragraphs = [
+        "담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록",
+        "세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
+    ]
 
 # 5. 상단 프로그램 창 배너
 st.markdown(f"""
@@ -152,19 +162,27 @@ st.code(final_title, language="text")
 
 st.markdown("---")
 
-# [2파트] 본문 내용 작성 영역
-st.markdown("#### 💡 2. 본문 내용 작성 (순수 알맹이)")
-edited_body_main = st.text_area(
-    "주요 추진 목적 및 하위 항목(가, 나, 다) 내용",
-    value=body_main,
-    height=160,
-    key=f"body_main_{category}"
-)
-edited_body_closing = st.text_input(
-    "마무리 조치 및 협조 요청 사항 (마지막 항)",
-    value=body_closing,
-    key=f"body_closing_{category}"
-)
+# [2파트] 본문 내용 작성 영역 (다중 본문 항 동적 추가 지원)
+st.markdown("#### 💡 2. 본문 내용 작성 (다중 항 동적 관리)")
+st.caption("필요에 따라 본문 항을 추가하여 3개, 4개 이상의 다중 편제로 확장할 수 있습니다.")
+
+if f'body_paragraphs_{category}' not in st.session_state:
+    st.session_state[f'body_paragraphs_{category}'] = initial_body_paragraphs
+
+if st.button("➕ 본문 항 추가", key=f"add_para_{category}"):
+    st.session_state[f'body_paragraphs_{category}'].append("")
+    st.rerun()
+
+updated_paragraphs = []
+for p_idx, p_text in enumerate(st.session_state[f'body_paragraphs_{category}']):
+    p_val = st.text_area(
+        f"본문 항 [{p_idx + 1}] 내용",
+        value=p_text,
+        height=120,
+        key=f"para_{category}_{p_idx}"
+    )
+    if p_val.strip():
+        updated_paragraphs.append(p_val.strip())
 
 st.markdown("---")
 
@@ -229,7 +247,7 @@ with col_sec2:
 
 st.markdown("---")
 
-# 6. 최종 미리보기 및 등록 버튼 (완벽한 번호 동적 채번 조립 로직)
+# 6. 최종 미리보기 및 등록 버튼 (완벽한 순차적 연쇄 번호 채번 조립 로직)
 if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary", use_container_width=True):
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
@@ -239,24 +257,18 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
     has_rel = use_related and updated_related
     
     # [채번 1] 관련 문서 유무에 따른 시작 번호 배정
+    current_num = 1
     if has_rel:
-        full_doc += "1. 관련:\n"
+        full_doc += f"{current_num}. 관련:\n"
         for char_lbl, text_val in updated_related:
             full_doc += f"  {char_lbl}. {text_val}\n"
         full_doc += "\n"
-        num_main = 2
-        num_closing = 3
-    else:
-        num_main = 1
-        num_closing = 2
+        current_num += 1
 
-    # [채번 2] 본문 메인 내용 및 마무리 조치 사항 조립
-    clean_main = edited_body_main.strip()
-    clean_closing = edited_body_closing.strip()
-    
-    full_doc += f"{num_main}. {clean_main}\n\n"
-    if clean_closing:
-        full_doc += f"{num_closing}. {clean_closing}\n\n"
+    # [채번 2] 동적으로 추가된 본문 항들을 순차적 번호(1, 2, 3, 4...)로 조립
+    for p_content in updated_paragraphs:
+        full_doc += f"{current_num}. {p_content}\n\n"
+        current_num += 1
     
     # [채번 3] 붙임 문서 조립 및 끝. 마감 처리
     has_att = use_attach and updated_attach
@@ -283,7 +295,7 @@ if st.button("🚀 최종 기안서 AI 검증 및 미리보기", type="primary",
 if st.session_state.get('preview_ready', False):
     st.markdown("---")
     st.markdown("#### ✨ 전자문서시스템 AI 검증 완료본 프리뷰")
-    st.info("공공 서식 정합성 및 번호 체계 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
+    st.info("공공 서식 정합성 및 다중 편제 번호 체계 검증이 완료되었습니다. 내용을 검토하신 후 최종 결재 상신을 진행해 주세요.")
     
     doc_title = st.session_state.get('final_doc_title', '')
     doc_body = st.session_state.get('final_doc_body', '')
