@@ -48,7 +48,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🎯 Human-in-the-Loop 프로세스")
-    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서 및 붙임 선택 후 **[최종 등록]**")
+    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서(가,나,다) 및 붙임(1,2,3) 설정 후 **[최종 등록]**")
 
 # 4. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
 if category == "업무분장":
@@ -67,14 +67,11 @@ else:
     default_title_content = "2026년도 핵심 업무 및 미결 현안 인수인계서 (김주무관)"
     default_body = "1. 관련 근거: 보안업무규정 및 당 기관 문서관리 지침\n2. 담당자 보직 변경에 따른 업무 연속성 확보와 행정 지식 자산의 안정적 승계를 위해 2026년도 소관 주요 업무 및 미결 현안에 대한 인수인계 결과를 보고합니다.\n\n  가. 인계자: 주무관 김○○ / 인수자: 주무관 박○○\n  나. 주요 인계 내용: 핵심 사업 추진 현황, 예산 집행 내역, 미결 공문 목록\n\n3. 세부 인수인계 내용 및 관련 파일은 별첨 시스템을 참고하시기 바랍니다."
 
-# 5. 프로그램 창 이름 스타일의 상단 배너 적용 (요청사항 반영)
-data_title = f"🏛️ [HRDK-AI 문서기안기]"
-data_sub = f"표준 제목 설정 및 AI 기안 검토기"
-
+# 5. 프로그램 창 이름 스타일의 상단 배너 적용
 st.markdown(f"""
 <div class="program-window">
-    <p class="program-title">{data_title}</p>
-    <p class="program-subtitle">{data_sub}</p>
+    <p class="program-title">🏛️ [HRDK-AI 문서기안기]</p>
+    <p class="program-subtitle">표준 제목 설정 및 AI 기안 검토기</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -108,21 +105,45 @@ edited_body = st.text_area(
 
 st.markdown("---")
 
-# [3파트] 관련문서 및 붙임문서 선택 영역
+# [3파트] 관련 문서 관리 (가, 나, 다...) 및 붙임 문서 관리 (1, 2, 3...)
 st.markdown("#### 3. 관련 문서 및 붙임 문서 설정")
-col_a, col_b = st.columns(2)
 
-with col_a:
-    has_related_doc = st.checkbox("📌 관련 문서 있음", value=True)
-    related_doc_text = ""
-    if has_related_doc:
-        related_doc_text = st.text_input("관련 문서 표시명 입력", value="일학습출제부-1234 (2026. 5. 10.)호 관련")
+col_sec1, col_sec2 = st.columns(2)
 
-with col_b:
-    has_attachment = st.checkbox("📎 붙임 문서 있음", value=True)
-    attachment_text = ""
-    if has_attachment:
-        attachment_text = st.text_input("붙임 문서명 입력", value="[붙임] 2026년도 세부 추진 계획서 1부.")
+# --- 관련 문서 (가, 나, 다...) 세션 상태 관리 ---
+with col_sec1:
+    st.markdown("##### 📌 관련 문서 (가, 나, 다...)")
+    if f'related_list_{category}' not in st.session_state:
+        st.session_state[f'related_list_{category}'] = ["기획예산담당관-1234 (2026. 5. 10.)호 관련"]
+    
+    if st.button("➕ 관련 문서 추가"):
+        st.session_state[f'related_list_{category}'].append("")
+        st.rerun()
+        
+    updated_related = []
+    hangul_chars = ["가", "나", "다", "라", "마", "바", "사"]
+    for idx, item in enumerate(st.session_state[f'related_list_{category}']):
+        char_label = hangul_chars[idx] if idx < len(hangul_chars) else f"({idx+1})"
+        val = st.text_input(f"관련 문서 [{char_label}]", value=item, key=f"rel_{category}_{idx}")
+        if val.strip():
+            updated_related.append((char_label, val))
+
+# --- 붙임 문서 (1, 2, 3...) 세션 상태 관리 ---
+with col_sec2:
+    st.markdown("##### 📎 붙임 문서 (1, 2, 3...)")
+    if f'attach_list_{category}' not in st.session_state:
+        st.session_state[f'attach_list_{category}'] = ["[붙임] 2026년도 세부 추진 계획서 1부."]
+        
+    if st.button("➕ 붙임 문서 추가"):
+        st.session_state[f'attach_list_{category}'].append("")
+        st.rerun()
+        
+    updated_attach = []
+    for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
+        num_label = str(idx + 1)
+        val = st.text_input(f"붙임 문서 [{num_label}]", value=item, key=f"att_{category}_{idx}")
+        if val.strip():
+            updated_attach.append((num_label, val))
 
 st.markdown("---")
 
@@ -131,15 +152,24 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
     
-    # 최종 문서 포맷 조립 (관련문서 -> 본문 -> 붙임 -> 끝)
+    # 최종 문서 포맷 조립 (관련문서 가나다 -> 본문 -> 붙임 123 -> 끝)
     full_doc = ""
-    if has_related_doc and related_doc_text.strip():
-        full_doc += f"산정 근거 및 관련: {related_doc_text}\n\n"
     
+    # 관련 문서 조립 (가, 나, 다...)
+    if updated_related:
+        full_doc += "산정 근거 및 관련:\n"
+        for char_lbl, text_val in updated_related:
+            full_doc += f"  {char_lbl}. {text_val}\n"
+        full_doc += "\n"
+    
+    # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    if has_attachment and attachment_text.strip():
-        full_doc += f"{attachment_text}\n\n"
+    # 붙임 문서 조립 (1, 2, 3...)
+    if updated_attach:
+        for num_lbl, text_val in updated_attach:
+            full_doc += f"붙임 {num_lbl}. {text_val}\n"
+        full_doc += "\n"
         
     full_doc += "끝."
     
