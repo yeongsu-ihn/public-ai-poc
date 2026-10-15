@@ -48,7 +48,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🎯 Human-in-the-Loop 프로세스")
-    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서(가,나,다) 및 붙임(1,2,3) 설정 후 **[최종 등록]**")
+    st.write("1. AI가 제안하는 **표준 제목 및 본문** 확인\n2. 필요시 텍스트 직접 수정\n3. 관련문서(가,나,다) 및 붙임 규격(1개/다수) 설정 후 **[최종 등록]**")
 
 # 4. 카테고리별 표준 제목 및 표준 본문 자동 생성 매핑
 if category == "업무분장":
@@ -105,7 +105,7 @@ edited_body = st.text_area(
 
 st.markdown("---")
 
-# [3파트] 관련 문서 관리 (가, 나, 다...) 및 붙임 문서 관리 (1, 2, 3...)
+# [3파트] 관련 문서 관리 (가, 나, 다...) 및 붙임 문서 관리 (공문서 규정 반영)
 st.markdown("#### 3. 관련 문서 및 붙임 문서 설정")
 
 col_sec1, col_sec2 = st.columns(2)
@@ -128,9 +128,9 @@ with col_sec1:
         if val.strip():
             updated_related.append((char_label, val))
 
-# --- 붙임 문서 (1, 2, 3...) 세션 상태 관리 ---
+# --- 붙임 문서 세션 상태 관리 ---
 with col_sec2:
-    st.markdown("##### 📎 붙임 문서 (1, 2, 3...)")
+    st.markdown("##### 📎 붙임 문서 (공문서 규정 서식)")
     if f'attach_list_{category}' not in st.session_state:
         st.session_state[f'attach_list_{category}'] = ["2026년도 세부 추진 계획서 1부."]
         
@@ -140,10 +140,9 @@ with col_sec2:
         
     updated_attach = []
     for idx, item in enumerate(st.session_state[f'attach_list_{category}']):
-        num_label = str(idx + 1)
-        val = st.text_input(f"붙임 내용 [{num_label}]", value=item, key=f"att_{category}_{idx}")
+        val = st.text_input(f"붙임 내용 {idx + 1}", value=item, key=f"att_{category}_{idx}")
         if val.strip():
-            updated_attach.append((num_label, val))
+            updated_attach.append(val.strip())
 
 st.markdown("---")
 
@@ -152,7 +151,7 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     st.session_state['preview_ready'] = True
     st.session_state['is_approved'] = False
     
-    # 최종 문서 포맷 조립 (관련문서 가나다 -> 본문 -> 붙임 123 -> 끝)
+    # 최종 문서 포맷 조립 (관련문서 -> 본문 -> 붙임 규칙 -> 끝.)
     full_doc = ""
     
     # 관련 문서 조립 (가, 나, 다...)
@@ -165,40 +164,5 @@ if st.button("🔍 최종 기안서 미리보기 (검증)", type="primary", use_
     # 본문 조립
     full_doc += f"{edited_body}\n\n"
     
-    # 붙임 문서 조립 (상단에 '붙임'을 한 번만 출력하고 하위에 번호 매기기)
-    if updated_attach:
-        full_doc += "붙임\n"
-        for num_lbl, text_val in updated_attach:
-            full_doc += f"  {num_lbl}. {text_val}\n"
-        full_doc += "\n"
-        
-    full_doc += "끝."
-    
-    st.session_state['final_doc_title'] = final_title
-    st.session_state['final_doc_body'] = full_doc
-
-# 미리보기 결과 출력
-if st.session_state.get('preview_ready', False):
-    st.markdown("---")
-    st.markdown("#### 🔎 전자문서시스템 최종 기안본 미리보기 (Human-in-the-Loop)")
-    st.info("아래의 최종 기안서 양식을 확인하신 후 결재 상신 및 문서함 등록을 진행해 주세요.")
-    
-    doc_title = st.session_state.get('final_doc_title', '')
-    doc_body = st.session_state.get('final_doc_body', '')
-    
-    st.markdown(f"**[제목]** `{doc_title}`")
-    st.markdown("**[본문 내용 및 편제]**")
-    st.code(doc_body, language="text")
-    
-    st.markdown("")
-    if st.button("🚀 결재 상신 및 표준 문서함 등록 (실행)", type="primary", use_container_width=True):
-        st.session_state['is_approved'] = True
-
-if st.session_state.get('is_approved', False):
-    approved_title = st.session_state.get('final_doc_title', '')
-    st.success(f"🎉 [{org_name}] 전자결재 상신이 완료되었으며, 표준 메타데이터 문서함에 성공적으로 등록되었습니다!")
-    st.markdown(f"**공식 등록된 메타데이터 제목:** `{approved_title}`")
-
-# 7. 하단 푸터
-st.markdown("---")
-st.markdown(f"2026 공공 AI 대전환 챌린지 출품작 시제품 (PoC) | 소속 기관: {org_name} | Powered by Streamlit", unsafe_allow_html=True)
+    # 붙임 문서 규격 조립 (공공기관 문서 작성 규정 제4조 기준)
+    if len(updated_attach) == 1:
