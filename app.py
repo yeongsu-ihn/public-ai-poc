@@ -270,4 +270,4 @@ if st.session_state.get('is_approved', False):
 
 # 7. 하단 푸터
 st.markdown("---")
-st.markdown(
+st.markdown(f"HRDK-AI 문서기안기 테스트 버전 | 소속 기관: {org_name} | Powered by Streamlit & AI Agent", unsafe_allow_html=True)
